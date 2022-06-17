@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidApplication/Exam_C2_Juin2022/App/app/src/main/res/layout/activity_connection.xml" value="0.1" />
         <entry key="..\:/AndroidApplication/Exam_C2_Juin2022/App/app/src/main/res/layout/activity_main.xml" value="0.21331521739130435" />
+        <entry key="..\:/AndroidApplication/Exam_C2_Juin2022/App/app/src/main/res/layout/activity_nft_page.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidApplication/Exam_C2_Juin2022/App/app/src/main/res/layout/activity_profil.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidApplication/Exam_C2_Juin2022/App/app/src/main/res/layout/content_profil.xml" value="0.25416666666666665" />
+        <entry key="..\:/AndroidApplication/Exam_C2_Juin2022/App/app/src/main/res/layout/liste_nft_layout.xml" value="0.25416666666666665" />
         <entry key="..\:/AndroidApplication/Exam_C2_Juin2022/app/app/src/main/res/layout/activity_main.xml" value="0.21331521739130435" />
       </map>
     </option>

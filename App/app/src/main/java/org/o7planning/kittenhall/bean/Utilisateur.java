@@ -15,10 +15,6 @@ public class Utilisateur {
     private double argent_investit;
     private double argent_gagne;
 
-    /*private int noteId;
-    private String noteTitle;
-    private String noteContent;*/
-
     public Utilisateur()  {
         this.pseudo = "null";
         this.mdp = "null";

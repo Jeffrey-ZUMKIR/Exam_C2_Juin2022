@@ -2,15 +2,20 @@ package org.o7planning.kittenhall;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.o7planning.kittenhall.bean.NFT;
 import org.o7planning.kittenhall.bean.Utilisateur;
 
 import java.io.BufferedReader;
@@ -34,15 +39,25 @@ public class MainActivity extends AppCompatActivity {
     private final List<Utilisateur> userList = new ArrayList<Utilisateur>();
     private ArrayAdapter<Utilisateur> listViewAdapter;
 
+    private final String EXTRA_DATA_BASE = "data base";
 
+    public static MyDatabaseHelper db;
+    public static SQLiteDatabase db2;
+
+    public static double cout_eur = 0;
+    public static double cout_btc = 0;
+    public static double cout_xlm = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MyDatabaseHelper db = new MyDatabaseHelper(this);
+        db = new MyDatabaseHelper(this);
+        db2 = db.getReadableDatabase();
+        //db.onUpgrade(db2, 0, 1);
         db.createDefaultUtilisateursIfNeed();
+        //db.createDefaultNFTsIfNeed();
 
         List<Utilisateur> list=  db.getAllUsers();
         this.userList.addAll(list);
@@ -50,7 +65,15 @@ public class MainActivity extends AppCompatActivity {
         //this.listViewAdapter = new ArrayAdapter<Utilisateur>(this,
           //      android.R.layout.simple_list_item_1, android.R.id.text1, this.userList);
 
-        Log.i("User: ", userList.get(0).getPseudo());
+        /*Log.i("User: ", userList.get(0).getPseudo());
+
+        Log.i("User : ", db.getUtilisateur("user1").getPseudo());
+
+        Log.i("NFT : ", db.getNFT("default1").getPseudo());
+
+        //db.updateOwnerNFT(db.getNFT("default1").getId_nft(),"admin3");
+
+        Log.i("NFT owner : ", db.getNFT("default1").getPseudo());*/
 
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .detectDiskReads()
@@ -65,13 +88,15 @@ public class MainActivity extends AppCompatActivity {
                 //.penaltyDeath()
                 .build());
 
+        /*double cout_eur = 0;
+        double cout_btc = 0;
+        double cout_xlm = 0;*/
+
         try {
-            URL url = new URL("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=eur%2Cbtc%2Cusd");
+            URL url = new URL("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=eur%2Cbtc%2Cxlm");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            Log.i("mec", "je suis avant");
             conn.getResponseCode();
             if(conn.getResponseCode() == HttpsURLConnection.HTTP_OK){
-                Log.i("Hey", "Mec cool");
                 InputStream inputStream = null;
                 try {
                     inputStream = conn.getInputStream();
@@ -89,9 +114,12 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject js = new JSONObject(data);
 
                 Log.i("cc", js.getJSONObject("ethereum").getString("btc"));
+
+                cout_eur = Double.parseDouble(js.getJSONObject("ethereum").getString("eur"));
+                cout_btc = Double.parseDouble(js.getJSONObject("ethereum").getString("btc"));
+                cout_xlm = Double.parseDouble(js.getJSONObject("ethereum").getString("xlm"));
             }
             else {
-                Log.i("Hey", "Va te faire foutre");
                 String response = "FAILED"; // See documentation for more info on response handling
             }
 
@@ -99,94 +127,71 @@ public class MainActivity extends AppCompatActivity {
             //TODO Handle problems..
         }
 
+        Log.i("Number of NFT",Integer.toString(db.getNFTsCount()) );
+        if(db.getNFTsCount() == 0){
+            double val_eth = 0.03;
+            double val_eur = val_eth * cout_eur;
+            double val_btc = val_eth * cout_btc;
+            double val_xlm = val_eth * cout_xlm;
 
+            Log.i("Eur : ", Double.toString(val_eur));
+            Log.i("Btc : ", Double.toString(val_btc));
+            Log.i("Xlm : ", Double.toString(val_xlm));
 
+            NFT nft1 = new NFT(1,R.drawable.nft1,"Chat gris",val_eur,val_eth,val_btc,val_xlm,"user1");
+            db.addNft(nft1);
 
-        /*URL url = null;
-        try {
-            url = new URL("https://api.coingecko.com/api/v3/ping");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        URLConnection urlConnection = null;
-        try {
-            urlConnection = url.openConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        InputStream in = null;
-        try {
-            in = urlConnection.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        //copyInputStreamToOutputStream(in, System.out);
+            val_eth = 0.06;
+            val_eur = val_eth * cout_eur;
+            val_btc = val_eth * cout_btc;
+            val_xlm = val_eth * cout_xlm;
 
+            NFT nft2 = new NFT(2,R.drawable.nft2,"Garfield",val_eur,val_eth,val_btc,val_xlm,"user1");
+            db.addNft(nft2);
 
-        // On compose l'Url à appeler (ici, pour récupérer
-        // la liste des repositories d'un utilisateur)
-        /*URL url = null;
-        try {
-            url = new URL("https://api.coingecko.com/api/v3/ping");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        HttpsURLConnection connection = null;
-        try {
-            connection = (HttpsURLConnection) url.openConnection();
-            Log.i("cc", "mon pote");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("cc", "batard");
-        }
+            val_eth = 0.05;
+            val_eur = val_eth * cout_eur;
+            val_btc = val_eth * cout_btc;
+            val_xlm = val_eth * cout_xlm;
 
-        try {
-            connection.setRequestMethod("GET");
-            Log.i("cc", "mon pote2");
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-            Log.i("cc", "batard2");
-        }
-        connection.setRequestProperty("Content-Type", "application/json");
+            NFT nft3 = new NFT(3,R.drawable.nft3,"Sleepy",val_eur,val_eth,val_btc,val_xlm,"user2");
+            db.addNft(nft3);
 
-        try {
-            connection.connect();
-            Log.i("cc", "mon pote3");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("cc", "batard3");
-        }
-        // Une fois le téléchargement effectué, on récupère le code http
-        // renvoyé par le serveur
-        int statusCode = 0;
-        try {
-            statusCode = connection.getResponseCode();
-        } catch (IOException e) {
-            e.printStackTrace();
+            val_eth = 0.12;
+            val_eur = val_eth * cout_eur;
+            val_btc = val_eth * cout_btc;
+            val_xlm = val_eth * cout_xlm;
+
+            NFT nft4 = new NFT(4,R.drawable.nft4,"Dumby",val_eur,val_eth,val_btc,val_xlm,"admin");
+            db.addNft(nft4);
+
+            val_eth = 0.09;
+            val_eur = val_eth * cout_eur;
+            val_btc = val_eth * cout_btc;
+            val_xlm = val_eth * cout_xlm;
+
+            NFT nft5 = new NFT(5,R.drawable.nft5,"King",val_eur,val_eth,val_btc,val_xlm,"admin");
+            db.addNft(nft5);
         }
 
-        // 2eme log important pour savoir comment s'est déroulé l'appel
-        Log.i("Connection", "Téléchargement terminé, code http : " + statusCode);
 
-        // On vérifie si le status code est 200, ce qui signifie que
-        // le serveur a pu exécuter correctement le webservice.
-        if(statusCode == 200) {
+        //Log.i("NFT : ", Double.toString(db.getNFT("nft4").getVal_eur()));
 
-            // Puis on récupère la donnée téléchargé sous la forme d'un InputStream
-            InputStream inputStream = null;
-            try {
-                inputStream = connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
+        Button nextPageBtn = (Button) findViewById(R.id.nextPage);
+
+        nextPageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent monIntent = new Intent(MainActivity.this, Connection.class);
+
+                //monIntent.putExtra(EXTRA_DATA_BASE, db);
+
+                startActivity(monIntent);
             }
+        });
 
-            // ...que l'on transforme ici en String par simplicité d'usage (note :
-            // il peut s'agit d'autre chose qu'un String pour
-            // d'autres webservices, comme des images)
-            String data = readStringData(inputStream);
 
-            Log.i("Request", data);
-        }*/
+
 
 
         //connection.disconnect();
