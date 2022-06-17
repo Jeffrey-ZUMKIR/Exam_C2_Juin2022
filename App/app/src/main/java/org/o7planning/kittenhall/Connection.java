@@ -63,6 +63,7 @@ public class Connection extends AppCompatActivity {
                     Intent intent = new Intent(Connection.this, Profil.class);
                     intent.putExtra(EXTRA_USER, txt_pseudo.getText().toString());
                     startActivity(intent);
+                    finish();
                 }else{
                     Toast.makeText(getApplicationContext(), "Pseudo ou mot de passe incorrecte.", Toast.LENGTH_SHORT).show();
                 }

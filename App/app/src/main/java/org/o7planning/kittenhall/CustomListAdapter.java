@@ -63,7 +63,8 @@ public class CustomListAdapter extends BaseAdapter {
         double prixEur = nft.getVal_eth()*val_eur;
         double prixEurRound = Math.round(prixEur * 100.0) / 100.0;
         holder.txt_val.setText(Double.toString(nft.getVal_eth()) + " ETH (" + prixEurRound + "€)");
-        double percent = (nft.getVal_eur() - prixEur)/prixEur;
+        double percent = ((prixEurRound - nft.getVal_eur())/nft.getVal_eur())*100;
+        //double percent = (nft.getVal_eur() - prixEur)/prixEur;
         double percentRound = Math.round(percent * 100.0) / 100.0;
         Log.i("Value eur :", Double.toString(nft.getVal_eur()));
         if(percentRound>0){

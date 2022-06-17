@@ -13,6 +13,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KittenHall">
         <activity
+            android:name=".PageAcheterNft"
+            android:exported="false" />
+        <activity
+            android:name=".PageAcheter"
+            android:exported="false" />
+        <activity
+            android:name=".PageVendreNft"
+            android:exported="false" />
+        <activity
+            android:name=".PageVendre"
+            android:exported="false" />
+        <activity
+            android:name=".Magasin"
+            android:exported="false" />
+        <activity
             android:name=".NftPage"
             android:exported="false" />
         <activity

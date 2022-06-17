@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
@@ -57,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         db2 = db.getReadableDatabase();
         //db.onUpgrade(db2, 0, 1);
         db.createDefaultUtilisateursIfNeed();
-        //db.createDefaultNFTsIfNeed();
 
         List<Utilisateur> list=  db.getAllUsers();
         this.userList.addAll(list);
@@ -104,20 +104,16 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                // ...que l'on transforme ici en String par simplicité d'usage (note :
-                // il peut s'agit d'autre chose qu'un String pour
-                // d'autres webservices, comme des images)
                 String data = readStringData(inputStream);
 
-                Log.i("Request", data);
-
                 JSONObject js = new JSONObject(data);
-
-                Log.i("cc", js.getJSONObject("ethereum").getString("btc"));
 
                 cout_eur = Double.parseDouble(js.getJSONObject("ethereum").getString("eur"));
                 cout_btc = Double.parseDouble(js.getJSONObject("ethereum").getString("btc"));
                 cout_xlm = Double.parseDouble(js.getJSONObject("ethereum").getString("xlm"));
+                Log.i("Val eur", js.getJSONObject("ethereum").getString("eur"));
+                Log.i("Val btc", js.getJSONObject("ethereum").getString("btc"));
+                Log.i("Val xlm", js.getJSONObject("ethereum").getString("xlm"));
             }
             else {
                 String response = "FAILED"; // See documentation for more info on response handling
@@ -126,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException | JSONException e) {
             //TODO Handle problems..
         }
+
+
 
         Log.i("Number of NFT",Integer.toString(db.getNFTsCount()) );
         if(db.getNFTsCount() == 0){
@@ -175,20 +173,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        //Log.i("NFT : ", Double.toString(db.getNFT("nft4").getVal_eur()));
 
-        Button nextPageBtn = (Button) findViewById(R.id.nextPage);
 
-        nextPageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent monIntent = new Intent(MainActivity.this, Connection.class);
 
-                //monIntent.putExtra(EXTRA_DATA_BASE, db);
-
-                startActivity(monIntent);
-            }
-        });
 
 
 
@@ -227,6 +214,27 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    final Handler h = new Handler();
+    final Runnable r = () -> {
+        if(!isFinishing()) {
+            Intent intent = new Intent(MainActivity.this, Connection.class);
+            startActivity(intent);
+            finish();
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        h.postDelayed(r, 2000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        h.removeCallbacks(r);
     }
 
 

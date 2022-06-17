@@ -113,8 +113,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public void createDefaultUtilisateursIfNeed()  {
         int count = this.getUsersCount();
         if(count ==0 ) {
-            Utilisateur user1 = new Utilisateur("user1", "123", 0,0,0,0,0,0,0,0,0);
-            Utilisateur user2 = new Utilisateur("user2", "123", 0,0,0,0,0,0,0,0,0);
+            Utilisateur user1 = new Utilisateur("user1", "123", 0,0,0,0,0,0,78.00,0,0);
+            Utilisateur user2 = new Utilisateur("user2", "123", 0,0,0,0,0,0,102.00,0,0);
             Utilisateur user3 = new Utilisateur("admin", "123", 0,0,0,0,0,0,0,0,0);
             this.addUser(user1);
             this.addUser(user2);
@@ -219,6 +219,26 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                         , COLUMN_NFT_VALETH, COLUMN_NFT_VALBTC, COLUMN_NFT_VALXLM
                         , COLUMN_NFT_PSEUDO}, COLUMN_NFT_IDIMAGE + "=?",
                 new String[] { String.valueOf(id_image) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        NFT nft = new NFT(Integer.parseInt(cursor.getString(0)),Integer.parseInt(cursor.getString(1)),cursor.getString(2),
+                Double.parseDouble(cursor.getString(3)),Double.parseDouble(cursor.getString(4)),Double.parseDouble(cursor.getString(5)),
+                Double.parseDouble(cursor.getString(6)),cursor.getString(7));
+
+        return nft;
+    }
+
+    public NFT getNFTById(int id_nft) {
+        Log.i(TAG, "MyDatabaseHelper.getNFT ... " + String.valueOf(id_nft));
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_NFT, new String[] { COLUMN_NFT_IDNFT,
+                        COLUMN_NFT_IDIMAGE, COLUMN_NFT_NOM, COLUMN_NFT_VALEUR
+                        , COLUMN_NFT_VALETH, COLUMN_NFT_VALBTC, COLUMN_NFT_VALXLM
+                        , COLUMN_NFT_PSEUDO}, COLUMN_NFT_IDNFT + "=?",
+                new String[] { String.valueOf(id_nft) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -358,6 +378,19 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         return db.update(TABLE_NFT, values, COLUMN_NFT_IDNFT + " =?",
                 new String[]{String.valueOf(id_nft)});
+    }
+
+    public int updateUserSolde(String pseudo, double solde){
+        Log.i(TAG, "MyDatabaseHelper.updateSolde User  id :... "  + pseudo);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_UTILISATEUR_SOLDE, solde);
+
+        return db.update(TABLE_UTILISATEUR, values, COLUMN_UTILISATEUR_PSEUDO + " =?",
+                new String[]{String.valueOf(pseudo)});
     }
 
     public void deleteUser(Utilisateur user) {
